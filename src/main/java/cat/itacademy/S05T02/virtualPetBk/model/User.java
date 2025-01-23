@@ -17,10 +17,11 @@ public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    @Column(name = "username")
+    @Column(name = "username", length = 45, nullable = false)
     private String userName;
-    @Column(name = "password")
+    @Column(name = "password", nullable = false)
     private String password;
+    @Column(name = "role", nullable = false)
     @Enumerated(EnumType.STRING)
     private Role role;
 
