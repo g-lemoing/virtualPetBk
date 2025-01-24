@@ -75,6 +75,10 @@ public class JwtServiceImpl implements JwtService{
                 .compact();
     }
 
+    public long getExpirationTime() {
+        return jwtExpiration;
+    }
+
     private boolean isTokenExpired(String token) {
         return extractExpiration(token).before(new Date());
     }
