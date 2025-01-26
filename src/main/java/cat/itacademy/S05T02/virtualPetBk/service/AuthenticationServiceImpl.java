@@ -2,6 +2,7 @@ package cat.itacademy.S05T02.virtualPetBk.service;
 
 import cat.itacademy.S05T02.virtualPetBk.dto.LoginUserDto;
 import cat.itacademy.S05T02.virtualPetBk.dto.RegisterUserDto;
+import cat.itacademy.S05T02.virtualPetBk.exception.UserNameAlreadyExistsException;
 import cat.itacademy.S05T02.virtualPetBk.model.Role;
 import cat.itacademy.S05T02.virtualPetBk.model.User;
 import cat.itacademy.S05T02.virtualPetBk.repository.UserRepository;
@@ -9,6 +10,8 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Service
 public class AuthenticationServiceImpl implements AuthenticationService{
@@ -26,8 +29,11 @@ public class AuthenticationServiceImpl implements AuthenticationService{
 
     @Override
     public User signup(RegisterUserDto registerUser){
+        String submittedName = registerUser.getUserName();
+        if(findByUsername(submittedName).isPresent()) throw new UserNameAlreadyExistsException(submittedName);
+
         User user = new User();
-        user.setUserName(registerUser.getUserName());
+        user.setUserName(submittedName);
         user.setPassword(passwordEncoder.encode(registerUser.getPassword()));
         user.setRole(Role.ROLE_USER);
         return userRepository.save(user);
@@ -42,5 +48,10 @@ public class AuthenticationServiceImpl implements AuthenticationService{
         );
         return userRepository.findByUserName(loginUser.getUserName())
                 .orElseThrow();
+    }
+
+    @Override
+    public Optional<User> findByUsername(String userName) {
+        return userRepository.findByUserName(userName);
     }
 }
