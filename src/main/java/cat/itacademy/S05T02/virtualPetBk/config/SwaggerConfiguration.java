@@ -6,12 +6,12 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class SwaggerConfiguration {
-
-    @Bean
-    GroupedOpenApi api() {
-        return GroupedOpenApi.builder()
-                .group("virtualPet")
-                .pathsToMatch("/auth/**", "/player/**", "/ranking")
-                .build();
-    }
+//
+//    @Bean
+//    GroupedOpenApi api() {
+//        return GroupedOpenApi.builder()
+//                .group("virtualPet")
+//                .pathsToMatch("/auth/**", "/pet/**")
+//                .build();
+//    }
 }
