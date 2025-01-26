@@ -41,4 +41,11 @@ public class GlobalExceptionHandler {
         problemDetail.setProperty("description", "Not authorized to access this resource");
         return problemDetail;
     }
+
+    @ExceptionHandler(UserNameAlreadyExistsException.class)
+    public ProblemDetail handleUserNameExistsInDatabaseException(UserNameAlreadyExistsException e){
+        problemDetail = ProblemDetail.forStatusAndDetail(HttpStatusCode.valueOf(409), e.getMessage());
+        problemDetail.setProperty("description", "User already exists, please use another user name.");
+        return problemDetail;
+    }
 }
