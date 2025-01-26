@@ -8,6 +8,8 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.nio.file.AccessDeniedException;
+
 @RestControllerAdvice
 public class GlobalExceptionHandler {
     ProblemDetail problemDetail = null;
@@ -33,4 +35,10 @@ public class GlobalExceptionHandler {
         return problemDetail;
     }
 
+    @ExceptionHandler(AccessDeniedException.class)
+    public ProblemDetail handleBadCredentialsException(AccessDeniedException e){
+        problemDetail = ProblemDetail.forStatusAndDetail(HttpStatusCode.valueOf(403), e.getMessage());
+        problemDetail.setProperty("description", "Not authorized to access this resource");
+        return problemDetail;
+    }
 }
