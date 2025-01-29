@@ -3,6 +3,7 @@ package cat.itacademy.S05T02.virtualPetBk.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -18,6 +19,7 @@ import java.util.List;
 
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity
 public class SecurityConfiguration {
     private final AuthenticationProvider authenticationProvider;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
@@ -32,7 +34,7 @@ public class SecurityConfiguration {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         final String[] WHITE_LIST_URL = { "/v3/api-docs", "/v3/api-docs/**", "/swagger-resources",
-                "/swagger-resources/**", "/swagger-ui/**", "/swagger-ui.html", "/auth/**"};
+                "/swagger-resources/**", "/swagger-ui/**", "/swagger-ui.html", "/auth/**", "/openapi.yaml"};
 
         http.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth ->
