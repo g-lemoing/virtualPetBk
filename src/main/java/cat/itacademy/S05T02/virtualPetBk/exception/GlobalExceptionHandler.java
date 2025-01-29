@@ -48,4 +48,11 @@ public class GlobalExceptionHandler {
         problemDetail.setProperty("description", "User already exists, please use another user name.");
         return problemDetail;
     }
+
+    @ExceptionHandler(PetNameAlreadyExistsException.class)
+    public ProblemDetail handlePetNameExistsInDatabaseException(PetNameAlreadyExistsException e){
+        problemDetail = ProblemDetail.forStatusAndDetail(HttpStatusCode.valueOf(409), e.getMessage());
+        problemDetail.setProperty("description", "Pet name already exists for this user, please choose another name.");
+        return problemDetail;
+    }
 }
