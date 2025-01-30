@@ -8,8 +8,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.List;
 
 public interface PetService {
-    List<UserPet> getAllUserPets(UserDetails userDetails);
-    List<UserPet> getAllUsersPets();
+    List<UserPet> getAllPets();
     UserPet createUserPet(UserPetCreateDto userPetCreateDto);
-    UserPet updateUserPet(UserDetails userDetails, int petUserId, Action action);
+    UserPet updateUserPet(int petUserId, String action);
+    void deleteUserPet(int petUserId);
 }
