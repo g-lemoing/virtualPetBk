@@ -2,14 +2,14 @@ package cat.itacademy.S05T02.virtualPetBk.service;
 
 import cat.itacademy.S05T02.virtualPetBk.dto.UserPetCreateDto;
 import cat.itacademy.S05T02.virtualPetBk.exception.PetNameAlreadyExistsException;
+import cat.itacademy.S05T02.virtualPetBk.exception.PetNotFoundException;
 import cat.itacademy.S05T02.virtualPetBk.exception.UserNotFoundException;
-import cat.itacademy.S05T02.virtualPetBk.model.Action;
-import cat.itacademy.S05T02.virtualPetBk.model.Animal;
-import cat.itacademy.S05T02.virtualPetBk.model.PetColor;
-import cat.itacademy.S05T02.virtualPetBk.model.UserPet;
+import cat.itacademy.S05T02.virtualPetBk.model.*;
 import cat.itacademy.S05T02.virtualPetBk.repository.UserPetRepository;
 import cat.itacademy.S05T02.virtualPetBk.repository.UserRepository;
-import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -25,13 +25,18 @@ public class PetServiceImpl implements PetService{
     }
 
     @Override
-    public List<UserPet> getAllUsersPets() {
-        return userPetRepository.findAll();
-    }
+    public List<UserPet> getAllPets() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String userName = authentication.getName();
+        Object principal = authentication.getPrincipal();
 
-    @Override
-    public List<UserPet> getAllUserPets(UserDetails userDetails) {
-        return List.of();
+        if(!(principal instanceof User userDetails)) throw new UserNotFoundException(userName);
+
+        int userId = userDetails.getId();
+        List<String> roles = authentication.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority).toList();
+
+        return roles.contains("ROLE_ADMIN") ? userPetRepository.findAll() : userPetRepository.findAllUserPetsByUserId(userId);
     }
 
     @Override
@@ -49,8 +54,15 @@ public class PetServiceImpl implements PetService{
     }
 
     @Override
-    public UserPet updateUserPet(UserDetails userDetails, int petUserId, Action action) {
-        return null;
+    public UserPet updateUserPet(int petUserId, String actionStr) {
+        UserPet userPet = getUserPet(petUserId);
+        Action action = Action.valueOf(actionStr.toUpperCase());
+        return updatePetLevels(userPet, action);
+    }
+
+    @Override
+    public void deleteUserPet(int petUserId) {
+        userPetRepository.delete(getUserPet(petUserId));
     }
 
     private UserPet createNewUserPet(UserPetCreateDto userPetCreateDto){
@@ -60,5 +72,32 @@ public class PetServiceImpl implements PetService{
         PetColor petColor = userPetCreateDto.getPetColor();
         return new UserPet(userId, animal, petName, petColor,
                 0.5, 0.5, 0.5);
+    }
+
+    private UserPet getUserPet(int petUserId){
+        return userPetRepository.findById(petUserId)
+                .orElseThrow(() -> new PetNotFoundException(petUserId));
+    }
+
+    protected UserPet updatePetLevels(UserPet userPet, Action action){
+        double petMood = userPet.getPetMood();
+        double petHungryLevel = userPet.getPetHungryLevel();
+        double petEnergyLevel = userPet.getPetEnergyLevel();
+
+        switch (action){
+            case FEED ->{petMood += 0.1; petHungryLevel = 0.0; petEnergyLevel += 0.3;}
+            case PLAY -> {petMood += 0.2; petHungryLevel += 0.2; petEnergyLevel -= 0.2;}
+            case WORK -> {petMood -= 0.3; petHungryLevel += 0.3; petEnergyLevel -= 0.4;}
+            case SLEEP -> {petMood += 0.5; petEnergyLevel = 1.0;}
+            case SUNGLASSES -> {petMood += 0.2; petEnergyLevel += 0.1;}
+            case WALKRAIN -> {petMood -= 0.4; petHungryLevel += 0.1; petEnergyLevel -= 0.1;}
+            case BEACH -> {petMood = 1.0; petHungryLevel += 0.2; petEnergyLevel += 0.5;}
+            case null, default -> throw new IllegalArgumentException();
+        }
+
+        userPet.setPetMood(Math.min(Math.max(0.0, petMood), 1.0));
+        userPet.setPetHungryLevel(Math.min(Math.max(0.0, petHungryLevel), 1.0));
+        userPet.setPetEnergyLevel(Math.min(Math.max(0.0, petEnergyLevel), 1.0));
+        return userPetRepository.save(userPet);
     }
 }
