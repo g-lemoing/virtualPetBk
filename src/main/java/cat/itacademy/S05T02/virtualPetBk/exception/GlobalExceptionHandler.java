@@ -2,6 +2,7 @@ package cat.itacademy.S05T02.virtualPetBk.exception;
 
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.security.SignatureException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ProblemDetail;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -53,6 +54,27 @@ public class GlobalExceptionHandler {
     public ProblemDetail handlePetNameExistsInDatabaseException(PetNameAlreadyExistsException e){
         problemDetail = ProblemDetail.forStatusAndDetail(HttpStatusCode.valueOf(409), e.getMessage());
         problemDetail.setProperty("description", "Pet name already exists for this user, please choose another name.");
+        return problemDetail;
+    }
+
+    @ExceptionHandler(PetNotFoundException.class)
+    public ProblemDetail handlePetNotFoundException(PetNotFoundException e){
+        problemDetail = ProblemDetail.forStatusAndDetail(HttpStatusCode.valueOf(404), e.getMessage());
+        problemDetail.setProperty("description", "Pet not found in database.");
+        return problemDetail;
+    }
+
+    @ExceptionHandler(UserNotFoundException.class)
+    public ProblemDetail handleUserNotFoundException(UserNotFoundException e){
+        problemDetail = ProblemDetail.forStatusAndDetail(HttpStatusCode.valueOf(404), e.getMessage());
+        problemDetail.setProperty("description", "User not found in database.");
+        return problemDetail;
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ProblemDetail handleIllegalArgumentException(IllegalArgumentException e){
+        problemDetail = ProblemDetail.forStatusAndDetail(HttpStatusCode.valueOf(400), e.getMessage());
+        problemDetail.setProperty("description", "The request contains bad arguments.");
         return problemDetail;
     }
 }
