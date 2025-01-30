@@ -1,0 +1,207 @@
+openapi: 3.0.1
+info:
+  title: Virtual Pet API
+  description: API for managing virtual pets.
+  version: 1.0.0
+servers:
+  - url: http://localhost:8080
+    description: Local server
+
+paths:
+  /pet/create:
+    post:
+      summary: Create pet for authenticated user
+      description: This endpoints makes possible creating a new virtual pet for the authenticated user
+      operationId: createUserPet
+      requestBody:
+        description: Requested data to create a new pet
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserPetCreateDto'
+      responses:
+        '200':
+          description: Pet successfully created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserPet'
+        '400':
+          description: Error request, validation has failed.
+        '401':
+          description: User not authenticated
+        '500':
+          description: Server internal error.
+      security:
+        - bearerAuth: [] # Autenticación con JWT
+  /auth/signup:
+    post:
+      summary: Register a new user
+      description: Endpoint for registering a new user in the system.
+      operationId: registerUser
+      requestBody:
+        description: Data required to register a new user
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterUserDto'
+      responses:
+        '200':
+          description: User successfully registered
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: Validation error
+        '500':
+          description: Internal server error
+
+  /auth/login:
+    post:
+      summary: Authenticate a user
+      description: Endpoint for user login, returning a JWT token upon successful authentication.
+      operationId: authenticateUser
+      requestBody:
+        description: User credentials for authentication
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginUserDto'
+      responses:
+        '200':
+          description: User successfully authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponseDto'
+        '401':
+          description: Invalid credentials
+        '500':
+          description: Internal server error
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    UserPetCreateDto:
+      type: object
+      properties:
+        userId:
+          type: integer
+          description: User unique identifier.
+        petName:
+          type: string
+          description: Pet name.
+        animal:
+          type: string
+          description: Pet type (i.e. 'DOG', 'LION', 'KANGAROO', 'KOALA').
+          enum:
+            - DOG
+            - LION
+            - KANGAROO
+            - KOALA
+        petColor:
+          type: string
+          description: Pet type (i.e. 'RED', 'YELLOW', 'BLUE', 'GREEN').
+          enum:
+            - RED
+            - YELLOW
+            - BLUE
+            - GREEN
+      required:
+        - petName
+        - animal
+        - petColor
+
+    UserPet:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: User pet unique identifier.
+        userId:
+          type: integer
+          description: User identifier.
+        name:
+          type: string
+          description: Pet name.
+        animal:
+          type: string
+          description: Animal.
+        petColor:
+          type: string
+          description: Pet color.
+        petEnergyLevel:
+          type: number
+          description: Pet energy level.
+        petMood:
+          type: number
+          description: Pet energy level.
+        petHungryLevel:
+          type: number
+          description: Pet hunger level
+
+    RegisterUserDto:
+      type: object
+      properties:
+        userName:
+          type: string
+          description: Username of the new user.
+        password:
+          type: string
+          description: Password of the new user.
+      required:
+        - userName
+        - password
+
+    LoginUserDto:
+      type: object
+      properties:
+        userName:
+          type: string
+          description: Username of the user.
+        password:
+          type: string
+          description: Password of the user.
+      required:
+        - userName
+        - password
+
+    LoginResponseDto:
+      type: object
+      properties:
+        token:
+          type: string
+          description: JWT token for the authenticated user.
+        expiresIn:
+          type: integer
+          description: Token expiration time in milliseconds.
+
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Unique identifier of the user.
+        userName:
+          type: string
+          description: Username of the user.
+        password:
+          type: string
+          description: User password.
+        role:
+          type: string
+          description: User role (ROLE_ADMIN, ROLE_USER).
+      required:
+        - userName
+        - password
+
+
