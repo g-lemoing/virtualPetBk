@@ -7,6 +7,7 @@ import cat.itacademy.S05T02.virtualPetBk.exception.UserNotFoundException;
 import cat.itacademy.S05T02.virtualPetBk.model.*;
 import cat.itacademy.S05T02.virtualPetBk.repository.UserPetRepository;
 import cat.itacademy.S05T02.virtualPetBk.repository.UserRepository;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -16,8 +17,8 @@ import java.util.List;
 
 @Service
 public class PetServiceImpl implements PetService{
-    private UserPetRepository userPetRepository;
-    private UserRepository userRepository;
+    private final UserPetRepository userPetRepository;
+    private final UserRepository userRepository;
 
     public PetServiceImpl(UserPetRepository userPetRepository, UserRepository userRepository) {
         this.userPetRepository = userPetRepository;
@@ -65,7 +66,7 @@ public class PetServiceImpl implements PetService{
         userPetRepository.delete(getUserPet(petUserId));
     }
 
-    private UserPet createNewUserPet(UserPetCreateDto userPetCreateDto){
+    protected UserPet createNewUserPet(@NotNull UserPetCreateDto userPetCreateDto){
         int userId = userPetCreateDto.getUserId();
         Animal animal = userPetCreateDto.getAnimal();
         String petName = userPetCreateDto.getPetName();
@@ -74,7 +75,7 @@ public class PetServiceImpl implements PetService{
                 0.5, 0.5, 0.5);
     }
 
-    private UserPet getUserPet(int petUserId){
+    protected UserPet getUserPet(int petUserId){
         return userPetRepository.findById(petUserId)
                 .orElseThrow(() -> new PetNotFoundException(petUserId));
     }
