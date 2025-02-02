@@ -2,9 +2,11 @@ package cat.itacademy.S05T02.virtualPetBk.model;
 
 import jakarta.persistence.*;
 
+import java.util.Objects;
+
 @Entity
 @Table(name = "users_has_pets")
-public class UserPet {
+public class UserPet{
     @Id
     @Column(name = "users_has_pets_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -102,5 +104,18 @@ public class UserPet {
 
     public void setPetHungryLevel(double petHungryLevel) {
         this.petHungryLevel = petHungryLevel;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) return true;
+        if (object == null || getClass() != object.getClass()) return false;
+        UserPet userPet = (UserPet) object;
+        return userId == userPet.userId && Double.compare(petEnergyLevel, userPet.petEnergyLevel) == 0 && Double.compare(petMood, userPet.petMood) == 0 && Double.compare(petHungryLevel, userPet.petHungryLevel) == 0 && animal == userPet.animal && Objects.equals(petName, userPet.petName) && petColor == userPet.petColor;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(userId, animal, petName, petColor, petEnergyLevel, petMood, petHungryLevel);
     }
 }
