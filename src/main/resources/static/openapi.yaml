@@ -8,38 +8,13 @@ servers:
     description: Local server
 
 paths:
-  /pet/create:
-    post:
-      summary: Create pet for authenticated user
-      description: This endpoints makes possible creating a new virtual pet for the authenticated user
-      operationId: createUserPet
-      requestBody:
-        description: Requested data to create a new pet
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UserPetCreateDto'
-      responses:
-        '200':
-          description: Pet successfully created
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/UserPet'
-        '400':
-          description: Error request, validation has failed.
-        '401':
-          description: User not authenticated
-        '500':
-          description: Server internal error.
-      security:
-        - bearerAuth: [] # Autenticación con JWT
   /auth/signup:
     post:
       summary: Register a new user
       description: Endpoint for registering a new user in the system.
       operationId: registerUser
+      tags:
+        - Authentication
       requestBody:
         description: Data required to register a new user
         required: true
@@ -64,6 +39,8 @@ paths:
       summary: Authenticate a user
       description: Endpoint for user login, returning a JWT token upon successful authentication.
       operationId: authenticateUser
+      tags:
+        - Authentication
       requestBody:
         description: User credentials for authentication
         required: true
@@ -82,6 +59,128 @@ paths:
           description: Invalid credentials
         '500':
           description: Internal server error
+
+  /pet/create:
+    post:
+      summary: Create pet for authenticated user
+      description: This endpoints makes possible creating a new virtual pet for the authenticated user
+      operationId: createUserPet
+      tags:
+        - UserPet
+      requestBody:
+        description: Requested data to create a new pet
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserPetCreateDto'
+      responses:
+        '200':
+          description: Pet successfully created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserPet'
+        '400':
+          description: Error request, validation has failed.
+        '401':
+          description: User not authenticated
+        '500':
+          description: Server internal error.
+      security:
+        - bearerAuth: [] # Autenticación con JWT
+
+  /pet/read:
+    post:
+      summary: Get pets for authenticated user
+      description: This endpoints retrieves all pets owned by the authenticated user, and all pets of all owners if role user is ADMIN
+      operationId: getAllPets
+      tags:
+        - UserPet
+      responses:
+        '200':
+          description: Pet list successfully retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserPet'
+        '400':
+          description: Error request, validation has failed.
+        '401':
+          description: User not authenticated
+        '404':
+          description: User not found
+        '500':
+          description: Server internal error.
+      security:
+        - bearerAuth: [] # Autenticación con JWT
+
+  /update/{petUserId}/{action}:
+    put:
+      summary: Updates user pet values upon the required action
+      operationId: updatePet
+      tags:
+        - UserPet
+      security:
+        - bearerAuth: []  # Autenticación con JWT
+      parameters:
+        - name: petUserId
+          in: path
+          required: true
+          description: User pet unique identifier
+          schema:
+            type: integer
+            format: int32
+        - name: action
+          in: path
+          required: true
+          description: "Action to be carried out with the pet (example: FEED, PLAY, WORK, etc.)"
+          schema:
+            type: string
+            enum: [FEED, PLAY, WORK, SLEEP, SUNGLASSES, WALKRAIN, BEACH]
+      responses:
+        "200":
+          description: "Pet values successfully updated"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserPet"
+        "400":
+          description: "Wrong request (invalid parameters)"
+        "401":
+          description: "Not authorized"
+        "404":
+          description: "Pet not found"
+        "500":
+          description: "Server internal error"
+
+  /delete/{petUserId}:
+    delete:
+      summary: Delete pet of authenticated user
+      operationId: deletePet
+      tags:
+        - UserPet
+      security:
+        - bearerAuth: []  # Autenticación con JWT
+      parameters:
+        - name: petUserId
+          in: path
+          required: true
+          description: User pet unique identifier
+          schema:
+            type: integer
+            format: int32
+      responses:
+        "204":
+          description: "No content: Pet successfully deleted"
+        "400":
+          description: "Wrong request (invalid parameters)"
+        "401":
+          description: "Not authorized"
+        "404":
+          description: "Pet not found"
+        "500":
+          description: "Server internal error"
 
 components:
   securitySchemes:
@@ -126,27 +225,30 @@ components:
       properties:
         id:
           type: integer
+          format: int32
           description: User pet unique identifier.
         userId:
           type: integer
+          format: int32
           description: User identifier.
         name:
           type: string
           description: Pet name.
         animal:
-          type: string
-          description: Animal.
+          $ref: "#/components/schemas/Animal"
         petColor:
-          type: string
-          description: Pet color.
+          $ref: "#/components/schemas/PetColor"
         petEnergyLevel:
           type: number
+          format: float
           description: Pet energy level.
         petMood:
           type: number
+          format: float
           description: Pet energy level.
         petHungryLevel:
           type: number
+          format: float
           description: Pet hunger level
 
     RegisterUserDto:
@@ -204,4 +306,12 @@ components:
         - userName
         - password
 
+    Animal:
+      type: string
+      enum: [DOG, KANGAROO, KOALA, LION]
+      description: Available animals
 
+    PetColor:
+      type: string
+      enum: [RED, YELLOW, GREEN, BLUE]
+      description: Available pet colors
