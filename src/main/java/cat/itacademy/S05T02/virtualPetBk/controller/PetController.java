@@ -1,12 +1,10 @@
 package cat.itacademy.S05T02.virtualPetBk.controller;
 
 import cat.itacademy.S05T02.virtualPetBk.dto.UserPetCreateDto;
-import cat.itacademy.S05T02.virtualPetBk.model.User;
 import cat.itacademy.S05T02.virtualPetBk.model.UserPet;
 import cat.itacademy.S05T02.virtualPetBk.service.PetServiceImpl;
 import org.apache.logging.log4j.core.config.plugins.validation.constraints.Required;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,6 +22,7 @@ public class PetController {
         UserPet userPet = petService.createUserPet(userPetCreateDto);
         return ResponseEntity.ok(userPet);
     }
+
     @GetMapping("/read")
     ResponseEntity<List<UserPet>> getAllPets(AuthenticationController authenticationController){
         List<UserPet> userPets = petService.getAllPets();
