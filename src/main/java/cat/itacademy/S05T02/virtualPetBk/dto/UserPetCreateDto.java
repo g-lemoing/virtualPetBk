@@ -3,8 +3,6 @@ package cat.itacademy.S05T02.virtualPetBk.dto;
 import cat.itacademy.S05T02.virtualPetBk.model.Animal;
 import cat.itacademy.S05T02.virtualPetBk.model.PetColor;
 
-import java.awt.*;
-
 public class UserPetCreateDto {
     private int userId;
     private Animal animal;
