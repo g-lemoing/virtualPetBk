@@ -1,5 +1,6 @@
 package cat.itacademy.S05T02.virtualPetBk.service;
 
+import cat.itacademy.S05T02.virtualPetBk.controller.PetController;
 import cat.itacademy.S05T02.virtualPetBk.dto.UserPetCreateDto;
 import cat.itacademy.S05T02.virtualPetBk.exception.PetNameAlreadyExistsException;
 import cat.itacademy.S05T02.virtualPetBk.exception.PetNotFoundException;
@@ -8,6 +9,8 @@ import cat.itacademy.S05T02.virtualPetBk.model.*;
 import cat.itacademy.S05T02.virtualPetBk.repository.UserPetRepository;
 import cat.itacademy.S05T02.virtualPetBk.repository.UserRepository;
 import jakarta.validation.constraints.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -19,6 +22,8 @@ import java.util.List;
 public class PetServiceImpl implements PetService{
     private final UserPetRepository userPetRepository;
     private final UserRepository userRepository;
+
+    private static final Logger log = LoggerFactory.getLogger(PetServiceImpl.class);
 
     public PetServiceImpl(UserPetRepository userPetRepository, UserRepository userRepository) {
         this.userPetRepository = userPetRepository;
@@ -44,13 +49,18 @@ public class PetServiceImpl implements PetService{
     public UserPet createUserPet(UserPetCreateDto userPetCreateDto) {
         int userId = userPetCreateDto.getUserId();
         String petName = userPetCreateDto.getPetName();
-        if(userRepository.findById(userId).isEmpty())
+        if(userRepository.findById(userId).isEmpty()){
+            log.error("User with userId {} not found in database, cannot create user pet.", + userId);
             throw new UserNotFoundException("");
+        }
 
-        if (!userPetRepository.findByUserIdAndPetName(userId, petName).isEmpty())
+        if (!userPetRepository.findByUserIdAndPetName(userId, petName).isEmpty()){
+            log.error("Already exists a pet named {} with owner id {}.", petName, userId);
             throw new PetNameAlreadyExistsException(petName, userId);
+        }
 
         UserPet userPet = createNewUserPet(userPetCreateDto);
+        log.info("User pet {} successfully created: ", userPet);
         return userPetRepository.save(userPet);
     }
 
@@ -81,6 +91,7 @@ public class PetServiceImpl implements PetService{
     }
 
     protected UserPet updatePetLevels(UserPet userPet, Action action){
+        log.info("User pet before action {}: {}", action, userPet);
         double petMood = userPet.getPetMood();
         double petHungryLevel = userPet.getPetHungryLevel();
         double petEnergyLevel = userPet.getPetEnergyLevel();
@@ -99,6 +110,7 @@ public class PetServiceImpl implements PetService{
         userPet.setPetMood(Math.min(Math.max(0.0, petMood), 1.0));
         userPet.setPetHungryLevel(Math.min(Math.max(0.0, petHungryLevel), 1.0));
         userPet.setPetEnergyLevel(Math.min(Math.max(0.0, petEnergyLevel), 1.0));
+        log.info("User pet after action {}: {}", action, userPet);
         return userPetRepository.save(userPet);
     }
 }
