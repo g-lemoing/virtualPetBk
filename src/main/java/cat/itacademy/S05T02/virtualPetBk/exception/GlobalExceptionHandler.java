@@ -2,6 +2,7 @@ package cat.itacademy.S05T02.virtualPetBk.exception;
 
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.security.SignatureException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ProblemDetail;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -9,6 +10,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.nio.file.AccessDeniedException;
+import java.sql.SQLDataException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -74,6 +76,20 @@ public class GlobalExceptionHandler {
     public ProblemDetail handleIllegalArgumentException(IllegalArgumentException e){
         problemDetail = ProblemDetail.forStatusAndDetail(HttpStatusCode.valueOf(400), e.getMessage());
         problemDetail.setProperty("description", "The request contains bad arguments.");
+        return problemDetail;
+    }
+
+    @ExceptionHandler(SQLDataException.class)
+    public ProblemDetail handleSQLDataException(SQLDataException e){
+        problemDetail = ProblemDetail.forStatusAndDetail(HttpStatusCode.valueOf(500), e.getMessage());
+        problemDetail.setProperty("description", "A problem happened when reading / writing  from / to the database.");
+        return problemDetail;
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ProblemDetail handleDataIntegrityViolationException(DataIntegrityViolationException e){
+        problemDetail = ProblemDetail.forStatusAndDetail(HttpStatusCode.valueOf(400), e.getMessage());
+        problemDetail.setProperty("description", "A data integrity issue occurred with data provided.");
         return problemDetail;
     }
 }
