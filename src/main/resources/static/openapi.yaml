@@ -201,9 +201,9 @@ components:
           description: Pet name.
         animal:
           type: string
-          description: Pet type (i.e. 'DOG', 'LION', 'KANGAROO', 'KOALA').
+          description: Pet type (i.e. 'MONKEY', 'LION', 'KANGAROO', 'KOALA').
           enum:
-            - DOG
+            - MONKEY
             - LION
             - KANGAROO
             - KOALA
@@ -308,7 +308,7 @@ components:
 
     Animal:
       type: string
-      enum: [DOG, KANGAROO, KOALA, LION]
+      enum: [MONKEY, KANGAROO, KOALA, LION]
       description: Available animals
 
     PetColor:
