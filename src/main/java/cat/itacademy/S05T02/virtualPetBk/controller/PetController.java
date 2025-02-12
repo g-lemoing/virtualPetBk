@@ -1,6 +1,7 @@
 package cat.itacademy.S05T02.virtualPetBk.controller;
 
 import cat.itacademy.S05T02.virtualPetBk.dto.UserPetCreateDto;
+import cat.itacademy.S05T02.virtualPetBk.model.User;
 import cat.itacademy.S05T02.virtualPetBk.model.UserPet;
 import cat.itacademy.S05T02.virtualPetBk.service.PetServiceImpl;
 import org.apache.logging.log4j.core.config.plugins.validation.constraints.Required;
@@ -9,12 +10,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/pet")
+@CrossOrigin(origins = "http://localhost:5173")
 public class PetController {
     @Autowired
     private PetServiceImpl petService;
@@ -24,6 +27,8 @@ public class PetController {
     @PostMapping("/create")
     ResponseEntity<UserPet> createUserPet(@RequestBody UserPetCreateDto userPetCreateDto,
                                           Authentication authentication){
+        User userDetails = (User) authentication.getPrincipal();
+        userPetCreateDto.setUserId(userDetails.getId());
         UserPet userPet = petService.createUserPet(userPetCreateDto);
         log.info("New user pet {} successfully stored in database.", userPet);
         return ResponseEntity.status(201).body(userPet);
