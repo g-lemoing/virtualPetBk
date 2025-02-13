@@ -97,12 +97,11 @@ public class PetServiceImpl implements PetService{
         double petEnergyLevel = userPet.getPetEnergyLevel();
 
         switch (action){
-            case FEED ->{petMood += 0.1; petHungryLevel = 0.0; petEnergyLevel += 0.3;}
-            case PLAY -> {petMood += 0.2; petHungryLevel += 0.2; petEnergyLevel -= 0.2;}
-            case WORK -> {petMood -= 0.3; petHungryLevel += 0.3; petEnergyLevel -= 0.4;}
+            case FEED ->{petMood += 0.1; petHungryLevel = 0.05; petEnergyLevel += 0.3;}
+            case PLAY -> {petMood += 0.2; petHungryLevel += 0.3; petEnergyLevel -= 0.2;}
+            case READ -> {petMood -= 0.3; petHungryLevel += 0.1; petEnergyLevel -= 0.4;}
             case SLEEP -> {petMood += 0.5; petEnergyLevel = 1.0;}
             case SUNGLASSES -> {petMood += 0.2; petEnergyLevel += 0.1;}
-            case WALKRAIN -> {petMood -= 0.4; petHungryLevel += 0.1; petEnergyLevel -= 0.1;}
             case BEACH -> {petMood = 1.0; petHungryLevel += 0.2; petEnergyLevel += 0.5;}
             case null, default -> throw new IllegalArgumentException();
         }

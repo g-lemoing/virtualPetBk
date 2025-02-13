@@ -134,10 +134,10 @@ paths:
         - name: action
           in: path
           required: true
-          description: "Action to be carried out with the pet (example: FEED, PLAY, WORK, etc.)"
+          description: "Action to be carried out with the pet (example: FEED, PLAY, READ, etc.)"
           schema:
             type: string
-            enum: [FEED, PLAY, WORK, SLEEP, SUNGLASSES, WALKRAIN, BEACH]
+            enum: [FEED, PLAY, READ, SLEEP, SUNGLASSES, BEACH]
       responses:
         "200":
           description: "Pet values successfully updated"
