@@ -23,6 +23,9 @@ public class PetServiceImpl implements PetService{
     private final UserPetRepository userPetRepository;
     private final UserRepository userRepository;
 
+    private final double MIN_VALUE = 0.01;
+    private final double MAX_VALUE = 1.0;
+
     private static final Logger log = LoggerFactory.getLogger(PetServiceImpl.class);
 
     public PetServiceImpl(UserPetRepository userPetRepository, UserRepository userRepository) {
@@ -106,9 +109,9 @@ public class PetServiceImpl implements PetService{
             case null, default -> throw new IllegalArgumentException();
         }
 
-        userPet.setPetMood(Math.min(Math.max(0.0, petMood), 1.0));
-        userPet.setPetHungryLevel(Math.min(Math.max(0.0, petHungryLevel), 1.0));
-        userPet.setPetEnergyLevel(Math.min(Math.max(0.0, petEnergyLevel), 1.0));
+        userPet.setPetMood(Math.min(Math.max(MIN_VALUE, petMood), MAX_VALUE));
+        userPet.setPetHungryLevel(Math.min(Math.max(MIN_VALUE, petHungryLevel), MAX_VALUE));
+        userPet.setPetEnergyLevel(Math.min(Math.max(MIN_VALUE, petEnergyLevel), MAX_VALUE));
         log.info("User pet after action {}: {}", action, userPet);
         return userPetRepository.save(userPet);
     }
