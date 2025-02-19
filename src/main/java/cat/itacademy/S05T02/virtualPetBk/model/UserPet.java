@@ -118,4 +118,18 @@ public class UserPet{
     public int hashCode() {
         return Objects.hash(userId, animal, petName, petColor, petEnergyLevel, petMood, petHungryLevel);
     }
+
+    @Override
+    public String toString() {
+        return "UserPet{" +
+                "petUserId=" + petUserId +
+                ", userId=" + userId +
+                ", animal=" + animal +
+                ", petName='" + petName + '\'' +
+                ", petColor=" + petColor +
+                ", petEnergyLevel=" + petEnergyLevel +
+                ", petMood=" + petMood +
+                ", petHungryLevel=" + petHungryLevel +
+                '}';
+    }
 }
