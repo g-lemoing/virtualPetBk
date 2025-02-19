@@ -42,15 +42,15 @@ class PetControllerTest {
 
     @BeforeEach
     void setUp() {
-        userPetCreateDto = new UserPetCreateDto(1, Animal.DOG, "Duna", PetColor.GREEN);
-        userPet1 = new UserPet(1, Animal.DOG, "Duna", PetColor.GREEN,
+        userPetCreateDto = new UserPetCreateDto(1, Animal.MONKEY, "Duna", PetColor.GREEN);
+        userPet1 = new UserPet(1, Animal.MONKEY, "Duna", PetColor.GREEN,
                 0.5, 0.5, 0.5);
-        userPet2 = new UserPet(98, Animal.DOG, "Pet2",
+        userPet2 = new UserPet(98, Animal.MONKEY, "Pet2",
                 PetColor.BLUE, 0.1, 0.9, 0.5);
-        userPet3 = new UserPet(98, Animal.DOG, "Pet3",
+        userPet3 = new UserPet(98, Animal.MONKEY, "Pet3",
                 PetColor.BLUE, 0.5, 0.5, 0.5);
-        userAdmin = new User(97, "userAdmin", Role.ROLE_ADMIN);
-        userNoAdmin = new User(98,"userNoAdmin", Role.ROLE_USER);
+        User userAdmin = new User(97, "userAdmin", Role.ROLE_ADMIN);
+        User userNoAdmin = new User(98,"userNoAdmin", Role.ROLE_USER);
         userPetWholeList = List.of(userPet1, userPet2, userPet3);
         userPetList = List.of(userPet2, userPet3);
     }
