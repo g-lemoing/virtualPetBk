@@ -1,6 +1,5 @@
 package cat.itacademy.S05T02.virtualPetBk.service;
 
-import cat.itacademy.S05T02.virtualPetBk.controller.PetController;
 import cat.itacademy.S05T02.virtualPetBk.dto.UserPetCreateDto;
 import cat.itacademy.S05T02.virtualPetBk.exception.PetNameAlreadyExistsException;
 import cat.itacademy.S05T02.virtualPetBk.exception.PetNotFoundException;
