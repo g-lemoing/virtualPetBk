@@ -34,11 +34,13 @@ public class User implements UserDetails {
     }
 
     @Override
+    @JsonIgnore
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority(role.name()));
+        return role == null ? Collections.emptyList() : List.of(new SimpleGrantedAuthority(role.name()));
     }
 
     @Override
+    @JsonProperty("userName")
     public String getUsername() {
         return userName;
     }
