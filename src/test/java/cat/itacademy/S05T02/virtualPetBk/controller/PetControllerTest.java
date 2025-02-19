@@ -39,6 +39,7 @@ class PetControllerTest {
     private UserPet userPet3;
     private List<UserPet> userPetWholeList;
     private List<UserPet> userPetList;
+    private User userNoAdmin;
 
     @BeforeEach
     void setUp() {
@@ -50,7 +51,7 @@ class PetControllerTest {
         userPet3 = new UserPet(98, Animal.MONKEY, "Pet3",
                 PetColor.BLUE, 0.5, 0.5, 0.5);
         User userAdmin = new User(97, "userAdmin", Role.ROLE_ADMIN);
-        User userNoAdmin = new User(98,"userNoAdmin", Role.ROLE_USER);
+        userNoAdmin = new User(98,"userNoAdmin", Role.ROLE_USER);
         userPetWholeList = List.of(userPet1, userPet2, userPet3);
         userPetList = List.of(userPet2, userPet3);
     }
@@ -58,6 +59,7 @@ class PetControllerTest {
     @Test
     void createUserPetShouldReturn200WhenValidRequest() throws Exception {
         when(petService.createUserPet(userPetCreateDto)).thenReturn(userPet1);
+        when(authentication.getPrincipal()).thenReturn(userNoAdmin);
         ResponseEntity<UserPet> responseEntity = petController.createUserPet(userPetCreateDto, authentication);
 
         assertEquals(responseEntity.getStatusCode(), HttpStatusCode.valueOf(201));
@@ -69,7 +71,7 @@ class PetControllerTest {
     void createUserPetShouldReturn409WhenPetAlreadyExists() throws Exception {
         when(petService.createUserPet(userPetCreateDto))
                 .thenThrow(new PetNameAlreadyExistsException(userPetCreateDto.getPetName(), userPetCreateDto.getUserId()));
-
+        when(authentication.getPrincipal()).thenReturn(userNoAdmin);
         assertThrows(PetNameAlreadyExistsException.class, ()-> petController.createUserPet(userPetCreateDto, authentication));
         verify(petService, times(1)).createUserPet(userPetCreateDto);
     }
@@ -78,6 +80,7 @@ class PetControllerTest {
     void createUserPetShouldReturn400WhenDataProvidedIsTruncatedInDatabase() throws Exception {
         when(petService.createUserPet(userPetCreateDto))
                 .thenThrow(new DataIntegrityViolationException("Possible cause"));
+        when(authentication.getPrincipal()).thenReturn(userNoAdmin);
 
         assertThrows(DataIntegrityViolationException.class, ()-> petController.createUserPet(userPetCreateDto, authentication));
         verify(petService, times(1)).createUserPet(userPetCreateDto);
