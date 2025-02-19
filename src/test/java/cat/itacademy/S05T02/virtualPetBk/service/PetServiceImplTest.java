@@ -52,11 +52,11 @@ class PetServiceImplTest {
 
     @BeforeEach
     void initTests(){
-        userPet1 = new UserPet(97, Animal.DOG, "Pet1",
+        userPet1 = new UserPet(97, Animal.MONKEY, "Pet1",
                 PetColor.BLUE, 0.5, 0.5, 0.5);
-        userPet2 = new UserPet(98, Animal.DOG, "Pet2",
+        userPet2 = new UserPet(98, Animal.MONKEY, "Pet2",
                 PetColor.BLUE, 0.1, 0.9, 0.5);
-        userPet3 = new UserPet(98, Animal.DOG, "Pet3",
+        userPet3 = new UserPet(98, Animal.MONKEY, "Pet3",
                 PetColor.BLUE, 0.5, 0.5, 0.5);
         userAdmin = new User(97, "userAdmin", Role.ROLE_ADMIN);
         userNoAdmin = new User(98,"userNoAdmin", Role.ROLE_USER);
@@ -97,7 +97,7 @@ class PetServiceImplTest {
     }
     @Test
     void createUserPetKoWhenUserNotExists() {
-        UserPetCreateDto userPetCreateDto = new UserPetCreateDto(99, Animal.DOG, "Pet2", PetColor.GREEN);
+        UserPetCreateDto userPetCreateDto = new UserPetCreateDto(99, Animal.MONKEY, "Pet2", PetColor.GREEN);
 
         when(userRepository.findById(99)).thenReturn(Optional.empty());
         assertThrows(UserNotFoundException.class, ()-> petService.createUserPet(userPetCreateDto));
@@ -105,7 +105,7 @@ class PetServiceImplTest {
 
     @Test
     void createUserPetKoWhenPetNameAlreadyExistsForUser() {
-        UserPetCreateDto userPetCreateDto = new UserPetCreateDto(userNoAdmin.getId(), Animal.DOG, "Pet2", PetColor.GREEN);
+        UserPetCreateDto userPetCreateDto = new UserPetCreateDto(userNoAdmin.getId(), Animal.MONKEY, "Pet2", PetColor.GREEN);
 
         when(userRepository.findById(userNoAdmin.getId())).thenReturn(Optional.of(userNoAdmin));
         when(userPetRepository.findByUserIdAndPetName(userNoAdmin.getId(), userPetCreateDto.getPetName())).thenReturn(List.of(userPet2));
@@ -117,7 +117,7 @@ class PetServiceImplTest {
 
     @Test
     void createUserPetOkWhenPetNameIsNewAndUserExists() {
-        UserPetCreateDto userPetCreateDto = new UserPetCreateDto(userNoAdmin.getId(), Animal.DOG, "Pet4", PetColor.GREEN);
+        UserPetCreateDto userPetCreateDto = new UserPetCreateDto(userNoAdmin.getId(), Animal.MONKEY, "Pet4", PetColor.GREEN);
         UserPet newUserPet = new UserPet(
                 userNoAdmin.getId(), userPetCreateDto.getAnimal(), userPetCreateDto.getPetName(),
                 userPetCreateDto.getPetColor(),0.5, 0.5, 0.5);
@@ -137,7 +137,7 @@ class PetServiceImplTest {
     @Test
     void updateUserPetWhenActionExists() {
         String action = "Play";
-        UserPet expectedUserPet = new UserPet(98, Animal.DOG, "Pet2",
+        UserPet expectedUserPet = new UserPet(98, Animal.MONKEY, "Pet2",
                 PetColor.BLUE, 0.0, 1.0, 0.7);
         when(userPetRepository.findById(1)).thenReturn(Optional.of(userPet2));
         when(userPetRepository.save(ArgumentMatchers.any(UserPet.class))).thenAnswer(answer -> answer.getArgument(0));
@@ -174,7 +174,7 @@ class PetServiceImplTest {
 
     @Test
     void updatePetLevelsTestWithinBounds(){
-        UserPet expectedUserPet = new UserPet(97, Animal.DOG, "Pet1",
+        UserPet expectedUserPet = new UserPet(97, Animal.MONKEY, "Pet1",
                 PetColor.BLUE, 0.3, 0.7, 0.7);
         when(userPetRepository.save(userPet1)).thenReturn(userPet1);
         UserPet updatedUserPet = petService.updatePetLevels(userPet1, Action.PLAY);
@@ -187,7 +187,7 @@ class PetServiceImplTest {
 
     @Test
     void updatePetLevelsTestWhenOutOfBounds(){
-        UserPet expectedUserPet = new UserPet(97, Animal.DOG, "Pet1",
+        UserPet expectedUserPet = new UserPet(97, Animal.MONKEY, "Pet1",
                 PetColor.BLUE, 0.0, 1.0, 0.7);
         when(userPetRepository.save(userPet2)).thenReturn(userPet2);
         UserPet updatedUserPet = petService.updatePetLevels(userPet2, Action.PLAY);
