@@ -59,21 +59,20 @@ class PetServiceImplTest {
         userNoAdmin = new User(98,"userNoAdmin", Role.ROLE_USER);
         userPetWholeList = List.of(userPet1, userPet2, userPet3);
         userPetList = List.of(userPet2, userPet3);
-        MockitoAnnotations.openMocks(this);
         SecurityContextHolder.setContext(securityContext);
     }
 
     @Test
     void getAllPetsWhenRoleIsAdmin() {
+
         User userDetails = userAdmin;
         when(securityContext.getAuthentication()).thenReturn(authentication);
         when(authentication.getName()).thenReturn("admin");
         when(authentication.getPrincipal()).thenReturn(userDetails);
         when(authentication.getAuthorities()).thenAnswer(unused -> Collections.singletonList(new SimpleGrantedAuthority("ROLE_ADMIN")));
         when(userPetRepository.findAll()).thenReturn(userPetWholeList);
-
         List<UserPet> userPets = petService.getAllPets();
-        assertEquals(userPets, userPetWholeList);
+        assertEquals(userPetWholeList, userPets);
         verify(userPetRepository, times(1)).findAll();
         verify(userPetRepository, times(0)).findAllUserPetsByUserId(97);
     }
@@ -135,22 +134,18 @@ class PetServiceImplTest {
     void updateUserPetWhenActionExists() {
         String action = "Play";
         UserPet expectedUserPet = new UserPet(98, Animal.MONKEY, "Pet2",
-                PetColor.BLUE, 0.0, 1.0, 0.7);
+                PetColor.BLUE, 0.01, 1.0, 0.8);
         when(userPetRepository.findById(1)).thenReturn(Optional.of(userPet2));
         when(userPetRepository.save(ArgumentMatchers.any(UserPet.class))).thenAnswer(answer -> answer.getArgument(0));
         UserPet userPetResult = petService.updateUserPet(1, action);
         assertAll(
-                () -> assertEquals(userPetResult.getPetUserId(), expectedUserPet.getPetUserId()),
-                () -> assertEquals(userPetResult.getPetMood(), expectedUserPet.getPetMood()),
-                () -> assertEquals(userPetResult.getPetHungryLevel(), expectedUserPet.getPetHungryLevel()),
+                () -> assertEquals(expectedUserPet.getPetUserId(), userPetResult.getPetUserId()),
+                () -> assertEquals(expectedUserPet.getPetMood(), userPetResult.getPetMood()),
+                () -> assertEquals(expectedUserPet.getPetHungryLevel(), userPetResult.getPetHungryLevel()),
                 () -> assertEquals(userPetResult.getPetEnergyLevel(), expectedUserPet.getPetEnergyLevel())
         );
         verify(userPetRepository, times(1)).findById(1);
         verify(userPetRepository, times(1)).save(ArgumentMatchers.any(UserPet.class));
-    }
-
-    @Test
-    void updateUserPetWhenActionNotExists() {
     }
 
     @Test
@@ -172,27 +167,26 @@ class PetServiceImplTest {
     @Test
     void updatePetLevelsTestWithinBounds(){
         UserPet expectedUserPet = new UserPet(97, Animal.MONKEY, "Pet1",
-                PetColor.BLUE, 0.3, 0.7, 0.7);
+                PetColor.BLUE, 0.3, 0.7, 0.8);
         when(userPetRepository.save(userPet1)).thenReturn(userPet1);
         UserPet updatedUserPet = petService.updatePetLevels(userPet1, Action.PLAY);
         assertAll(
-                () -> assertEquals(updatedUserPet.getPetEnergyLevel(), expectedUserPet.getPetEnergyLevel(), "PetEnergyLevel should be 0.3"),
-                () -> assertEquals(updatedUserPet.getPetMood(), expectedUserPet.getPetMood(), "PetMood should be 0.7"),
-                () -> assertEquals(updatedUserPet.getPetHungryLevel(), expectedUserPet.getPetHungryLevel(), "PetHungryLevel should be 0.7")
+                () -> assertEquals(expectedUserPet.getPetEnergyLevel(), updatedUserPet.getPetEnergyLevel(), "PetEnergyLevel should be 0.3"),
+                () -> assertEquals(expectedUserPet.getPetMood(), updatedUserPet.getPetMood(), "PetMood should be 0.7"),
+                () -> assertEquals(expectedUserPet.getPetHungryLevel(), updatedUserPet.getPetHungryLevel(), "PetHungryLevel should be 0.8")
         );
     }
 
     @Test
     void updatePetLevelsTestWhenOutOfBounds(){
         UserPet expectedUserPet = new UserPet(97, Animal.MONKEY, "Pet1",
-                PetColor.BLUE, 0.0, 1.0, 0.7);
+                PetColor.BLUE, 0.01, 1.0, 0.8);
         when(userPetRepository.save(userPet2)).thenReturn(userPet2);
         UserPet updatedUserPet = petService.updatePetLevels(userPet2, Action.PLAY);
         assertAll(
-                () -> assertEquals(updatedUserPet.getPetEnergyLevel(), expectedUserPet.getPetEnergyLevel(), "PetEnergyLevel should be 0.0"),
-                () -> assertEquals(updatedUserPet.getPetMood(), expectedUserPet.getPetMood(), "PetMood should be 1.0"),
-                () -> assertEquals(updatedUserPet.getPetHungryLevel(), expectedUserPet.getPetHungryLevel(), "PetHungryLevel should be 0.7")
+                () -> assertEquals(expectedUserPet.getPetEnergyLevel(), updatedUserPet.getPetEnergyLevel(), "PetEnergyLevel should be 0.01"),
+                () -> assertEquals(expectedUserPet.getPetMood(), updatedUserPet.getPetMood(), "PetMood should be 1.0"),
+                () -> assertEquals(expectedUserPet.getPetHungryLevel(), updatedUserPet.getPetHungryLevel(), "PetHungryLevel should be 0.7")
         );
-
     }}
 
