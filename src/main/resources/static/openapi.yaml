@@ -286,6 +286,12 @@ components:
         expiresIn:
           type: integer
           description: Token expiration time in milliseconds.
+        userName:
+          type: string
+          description: user name
+        userRole:
+          type: string
+          description: user role
 
     User:
       type: object
